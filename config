@@ -8,11 +8,8 @@ BASEDIR=`pwd`
 PGBENCHBIN=`which pgbench`
 GNUPLOT=`which gnuplot`
 
-# These values are for pgbench 8.4 and later
+# These values are for pgbench 10 and later
 TESTDIR="tests"
-
-# Use these values for pgbench 8.3
-#TESTDIR="tests/tests-8.3"
 
 # SKIPINIT should be set to 1 either when simulating a cold cache, or
 # if you are not using the pgbench tables for your test

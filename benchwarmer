@@ -170,7 +170,7 @@ if [ "$SKIPINIT" -ne "1" ]; then
     CHECK=`$TESTPSQL -At -c "SELECT checkpoints_req FROM pg_stat_bgwriter"`
     if [ "$CHECK" -gt "$STARTCHECK" ] ; then
       break
-    fi 
+    fi
     sleep 1
   done
 
@@ -200,7 +200,7 @@ fi
 
 # Grab starting values for statistics
 get_bgwriter
-START_WAL=`$TESTPSQL -A -t -F" " -c "select pg_current_xlog_location()"`
+START_WAL=`$TESTPSQL -A -t -F" " -c "select pg_current_wal_lsn()"`
 $RESULTPSQL -c "insert into test_bgwriter(test,checkpoints_timed,checkpoints_req,buffers_checkpoint,buffers_clean,maxwritten_clean,buffers_backend,buffers_alloc,buffers_backend_fsync) values('$TEST','$checkpoints_timed','$checkpoints_req','$buffers_checkpoint','$buffers_clean','$maxwritten_clean','$buffers_backend','$buffers_alloc','$buffers_backend_fsync')"
 
 # Setup test directory tree
@@ -237,7 +237,7 @@ fi
 # Find largest dirty memory value (which is in kB)
 max_dirty=`cat meminfo.log | grep Dirty | awk '{print $4}' | sort -n | tail -n 1`
 if [ -z "$max_dirty" ] ; then
- max_dirty=0 
+ max_dirty=0
 fi
 
 # Update bgwriter data with delta
@@ -257,7 +257,7 @@ $RESULTPSQL -c "update test_bgwriter set \
 # WAL values are initially saved as text because they're pulled from the test
 # database--but the functions to turn them into numeric types is available
 # only in the results one.
-END_WAL=`$TESTPSQL -A -t -F" " -c "select pg_current_xlog_location()"`
+END_WAL=`$TESTPSQL -A -t -F" " -c "select pg_current_wal_lsn()"`
 $RESULTPSQL -q -c "UPDATE tests SET wal_written=wal_lsn('$END_WAL') - wal_lsn('$START_WAL') WHERE test=$TEST"
 
 cat results.txt

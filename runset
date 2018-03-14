@@ -33,19 +33,19 @@ fi
 
 for SCALE in $SCALES; do
   #
-  # Have a consistent, clean set of pgbench tables to start 
+  # Have a consistent, clean set of pgbench tables to start
   # each test run with
   #
 
   if [ "$SKIPINIT" -ne "1" ]; then
     if [ "$PGBENCH_TABLES" -eq "1" ] ; then
       echo Removing old pgbench tables
-      $TESTPSQL -c "drop table ${TABLEPREFIX}accounts; drop table ${TABLEPREFIX}branches; drop table ${TABLEPREFIX}tellers; drop table ${TABLEPREFIX}history;"
+      $TESTPSQL -c "drop table ${TABLEPREFIX}accounts cascade; drop table ${TABLEPREFIX}branches cascade; drop table ${TABLEPREFIX}tellers cascade; drop table ${TABLEPREFIX}history cascade;"
     fi
     $TESTPSQL -c "vacuum"
 
     echo Creating new pgbench tables
-    $PGBENCHBIN -i -s $SCALE -h $TESTHOST -U $TESTUSER -p $TESTPORT $TESTDB
+    $PGBENCHBIN -i -s $SCALE -h $TESTHOST -U $TESTUSER -p $TESTPORT --foreign-keys $TESTDB
   fi
   #
   # Run the main test
@@ -59,7 +59,7 @@ for SCALE in $SCALES; do
         for r in $SETRATES; do
           echo Run set \#$t of $SETTIMES with $c clients scale=$SCALE rate=$r
           ./benchwarmer $c $r
-        done 
+        done
       fi
       echo
     done
